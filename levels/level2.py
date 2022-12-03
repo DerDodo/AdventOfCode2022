@@ -1,5 +1,7 @@
 from enum import IntEnum
 
+from typing import List
+
 
 class Outcome(IntEnum):
     Victory = 6
@@ -79,10 +81,10 @@ def step2mapper(opponent: RPS, text: str) -> RPS:
     return step2map[text][opponent]
 
 
-def parse_input_file(input_file_name: str, mapper) -> list[Round]:
+def parse_input_file(input_file_name: str, mapper) -> List[Round]:
     file = open(input_file_name, "r")
     lines = file.readlines()
-    all_rounds: list[Round] = list()
+    all_rounds: List[Round] = list()
     for line in lines:
         line = line.strip()
         parts = line.split(" ")
@@ -92,7 +94,7 @@ def parse_input_file(input_file_name: str, mapper) -> list[Round]:
     return all_rounds
 
 
-def calc_score(_rounds: list[Round]) -> int:
+def calc_score(_rounds: List[Round]) -> int:
     score = 0
     for _round in _rounds:
         score += _round.get_points()

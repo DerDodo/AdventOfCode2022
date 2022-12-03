@@ -1,6 +1,8 @@
+from typing import List
+
 
 class Elf:
-    items: list[int]
+    items: List[int]
 
     def __init__(self):
         self.items = list()
@@ -12,10 +14,10 @@ class Elf:
         return sum(self.items)
 
 
-def parse_input_file(input_file_name) -> list[Elf]:
+def parse_input_file(input_file_name) -> List[Elf]:
     file = open(input_file_name, "r")
     lines = file.readlines()
-    all_elves: list[Elf] = list()
+    all_elves: List[Elf] = list()
     new_elf = Elf()
     for line in lines:
         line = line.strip()
