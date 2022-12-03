@@ -2,6 +2,8 @@ from enum import IntEnum
 
 from typing import List
 
+from util.file_util import read_input_file
+
 
 class Outcome(IntEnum):
     Victory = 6
@@ -81,12 +83,10 @@ def step2mapper(opponent: RPS, text: str) -> RPS:
     return step2map[text][opponent]
 
 
-def parse_input_file(input_file_name: str, mapper) -> List[Round]:
-    file = open(input_file_name, "r")
-    lines = file.readlines()
+def parse_input_file(mapper) -> List[Round]:
+    lines = read_input_file(2, 1)
     all_rounds: List[Round] = list()
     for line in lines:
-        line = line.strip()
         parts = line.split(" ")
         opponent = str2rps(parts[0])
         you = mapper(opponent, parts[1])
@@ -94,16 +94,13 @@ def parse_input_file(input_file_name: str, mapper) -> List[Round]:
     return all_rounds
 
 
-def calc_score(_rounds: List[Round]) -> int:
-    score = 0
-    for _round in _rounds:
-        score += _round.get_points()
-    return score
+def calc_score(rounds: List[Round]) -> int:
+    return sum(map(Round.get_points, rounds))
 
 
 if __name__ == '__main__':
-    rounds1 = parse_input_file("input-files/level2-1.txt", step1mapper)
+    rounds1 = parse_input_file(step1mapper)
     print("Total score round 1: " + str(calc_score(rounds1)))
 
-    rounds2 = parse_input_file("input-files/level2-1.txt", step2mapper)
+    rounds2 = parse_input_file(step2mapper)
     print("Total score round 1: " + str(calc_score(rounds2)))

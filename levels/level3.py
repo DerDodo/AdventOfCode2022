@@ -2,6 +2,8 @@ from collections import Counter
 from typing import List, Set
 from numpy import array_split
 
+from util.file_util import read_input_file
+
 
 class Rucksack:
     content: str
@@ -22,21 +24,16 @@ class Rucksack:
         raise Exception("Couldn't find a wrong item")
 
 
-def parse_input_file1(input_file_name: str) -> List[Rucksack]:
-    file = open(input_file_name, "r")
-    lines = file.readlines()
-    all_rucksacks: List[Rucksack] = list()
-    for line in lines:
-        line = line.strip()
-        all_rucksacks.append(Rucksack(line))
+def parse_input_file1() -> List[Rucksack]:
+    lines = read_input_file(3, 1)
+    all_rucksacks = list(map(Rucksack, lines))
     return all_rucksacks
 
 
-def parse_input_file2(input_file_name: str) -> List[List[Rucksack]]:
-    file = open(input_file_name, "r")
-    lines = file.readlines()
-    all_rucksacks: List[Rucksack] = list(map(Rucksack, lines))
-    rucksack_groups: List[List[Rucksack]] = array_split(all_rucksacks, len(all_rucksacks) / 3)
+def parse_input_file2() -> List[List[Rucksack]]:
+    lines = read_input_file(3, 1)
+    all_rucksacks = list(map(Rucksack, lines))
+    rucksack_groups = array_split(all_rucksacks, len(all_rucksacks) / 3)
     return rucksack_groups
 
 
@@ -44,7 +41,7 @@ def get_item_priority(item: str) -> int:
     i = ord(item)
     if i >= 97:  # lower case letters
         return i - 96
-    else:
+    else:  # upper case letters
         return i - (65 - 27)
 
 
@@ -58,18 +55,16 @@ def rucksack2set(rucksack: Rucksack) -> Set[str]:
 def find_badge(rucksacks: List[Rucksack]) -> str:
     contents = list(map(lambda rucksack: Counter(rucksack2set(rucksack)), rucksacks))
     overlap = list((contents[0] & contents[1] & contents[2]).elements())
-    if len(overlap) != 1:
-        print("Couldn't reduce rucksacks:(" + str(len(overlap)) + ") " + ",".join(overlap))
     return overlap[0]
 
 
 if __name__ == '__main__':
-    rucksacks1 = parse_input_file1("input-files/level3-1.txt")
+    rucksacks1 = parse_input_file1()
     wrong_items = map(Rucksack.find_wrong_item, rucksacks1)
     wrong_item_priorities = map(get_item_priority, wrong_items)
     print("Wrong item priority: " + str(sum(wrong_item_priorities)))
 
-    rucksacks2 = parse_input_file2("input-files/level3-1.txt")
+    rucksacks2 = parse_input_file2()
     badges = map(find_badge, rucksacks2)
     badges_priorities = map(get_item_priority, badges)
     print("Badge priority: " + str(sum(badges_priorities)))
