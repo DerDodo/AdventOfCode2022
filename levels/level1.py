@@ -39,4 +39,3 @@ if __name__ == '__main__':
 
     max_three_elves_weight = sum(map(Elf.total_weight, elves[0:3]))
     print("Max 3 carrying elves: " + str(max_three_elves_weight))
-
