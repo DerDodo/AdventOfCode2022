@@ -20,7 +20,7 @@ class Rucksack:
         for item in self.compartment1:
             if item in self.compartment2:
                 return item
-        raise Exception("Couldn't find a wrong item")
+        raise ValueError("Couldn't find a wrong item")
 
 
 def parse_input_file1() -> List[Rucksack]:

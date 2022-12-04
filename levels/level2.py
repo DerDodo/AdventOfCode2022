@@ -53,7 +53,7 @@ def str2rps(text: str) -> RPS:
     elif text == "Z":
         return RPS.Scissors
     else:
-        raise Exception("Cannot parse input: " + text)
+        raise ValueError("Cannot parse input: " + text)
 
 
 def step1mapper(opponent: RPS, text: str) -> RPS:

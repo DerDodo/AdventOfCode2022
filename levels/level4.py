@@ -4,29 +4,33 @@ from util.file_util import read_input_file
 
 
 class Assignments:
-    assignment1Left: int
-    assignment1Right: int
-    assignment2Left: int
-    assignment2Right: int
+    assignment_1_left: int
+    assignment_1_right: int
+    assignment_2_left: int
+    assignment_2_right: int
 
     def __init__(self, assignment: str):
         assignment_parts = assignment.split(",")
-        assignment1 = assignment_parts[0].split("-")
-        assignment2 = assignment_parts[1].split("-")
+        assignment_1 = assignment_parts[0].split("-")
+        assignment_2 = assignment_parts[1].split("-")
 
-        self.assignment1Left = int(assignment1[0])
-        self.assignment1Right = int(assignment1[1])
-        self.assignment2Left = int(assignment2[0])
-        self.assignment2Right = int(assignment2[1])
+        self.assignment_1_left = int(assignment_1[0])
+        self.assignment_1_right = int(assignment_1[1])
+        self.assignment_2_left = int(assignment_2[0])
+        self.assignment_2_right = int(assignment_2[1])
 
     def does_fully_overlap(self) -> bool:
-        is_1_in_2 = (self.assignment2Left <= self.assignment1Left and self.assignment2Right >= self.assignment1Right)
-        is_2_in_1 = (self.assignment1Left <= self.assignment2Left and self.assignment1Right >= self.assignment2Right)
+        is_1_in_2 = (self.assignment_2_left <= self.assignment_1_left
+                     and self.assignment_2_right >= self.assignment_1_right)
+        is_2_in_1 = (self.assignment_1_left <= self.assignment_2_left
+                     and self.assignment_1_right >= self.assignment_2_right)
         return is_1_in_2 or is_2_in_1
 
     def does_partly_overlap(self) -> bool:
-        is_1_before_2 = (self.assignment1Left < self.assignment2Left and self.assignment1Right < self.assignment2Left)
-        is_2_before_1 = (self.assignment2Left < self.assignment1Left and self.assignment2Right < self.assignment1Left)
+        is_1_before_2 = (self.assignment_1_left < self.assignment_2_left
+                         and self.assignment_1_right < self.assignment_2_left)
+        is_2_before_1 = (self.assignment_2_left < self.assignment_1_left
+                         and self.assignment_2_right < self.assignment_1_left)
         return not is_1_before_2 and not is_2_before_1
 
 
