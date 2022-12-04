@@ -11,7 +11,6 @@ class Rucksack:
     compartment2: str
 
     def __init__(self, content: str):
-        content = content.strip()
         compartment_length = int(len(content) / 2)
         self.content = content
         self.compartment1 = content[0:compartment_length]
@@ -68,5 +67,3 @@ if __name__ == '__main__':
     badges = map(find_badge, rucksacks2)
     badges_priorities = map(get_item_priority, badges)
     print("Badge priority: " + str(sum(badges_priorities)))
-
-
