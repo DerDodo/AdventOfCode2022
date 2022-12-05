@@ -56,7 +56,7 @@ def str2rps(text: str) -> RPS:
         raise ValueError("Cannot parse input: " + text)
 
 
-def step1mapper(opponent: RPS, text: str) -> RPS:
+def step1mapper(_: RPS, text: str) -> RPS:
     return str2rps(text)
 
 
