@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import List, Set
+from typing import List, Set, Tuple
 from numpy import array_split
 
 from util.file_util import read_input_file
@@ -24,13 +24,13 @@ class Rucksack:
 
 
 def parse_input_file1() -> List[Rucksack]:
-    lines = read_input_file(3, 1)
+    lines = read_input_file(3)
     all_rucksacks = list(map(Rucksack, lines))
     return all_rucksacks
 
 
 def parse_input_file2() -> List[List[Rucksack]]:
-    lines = read_input_file(3, 1)
+    lines = read_input_file(3)
     all_rucksacks = list(map(Rucksack, lines))
     rucksack_groups = array_split(all_rucksacks, len(all_rucksacks) / 3)
     return rucksack_groups
@@ -57,13 +57,19 @@ def find_badge(rucksacks: List[Rucksack]) -> str:
     return overlap[0]
 
 
-if __name__ == '__main__':
+def level3() -> Tuple[int, int]:
     rucksacks1 = parse_input_file1()
     wrong_items = map(Rucksack.find_wrong_item, rucksacks1)
     wrong_item_priorities = map(get_item_priority, wrong_items)
-    print("Wrong item priority: " + str(sum(wrong_item_priorities)))
 
     rucksacks2 = parse_input_file2()
     badges = map(find_badge, rucksacks2)
     badges_priorities = map(get_item_priority, badges)
-    print("Badge priority: " + str(sum(badges_priorities)))
+
+    return sum(wrong_item_priorities), sum(badges_priorities)
+
+
+if __name__ == '__main__':
+    wrong_item_priority, badges_priority = level3()
+    print(f"Wrong item priority: {wrong_item_priority}")
+    print(f"Badge priority: {badges_priority}")

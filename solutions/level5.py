@@ -31,7 +31,7 @@ def revert_stacks(in_stacks: List[List[str]]) -> List[List[str]]:
 
 
 def parse_input_file() -> Tuple[Cargo, List[Command]]:
-    lines = read_input_file(5, 1, False)
+    lines = read_input_file(5, False)
     num_crates = int((len(lines[0]) + 1) / 4)
     all_commands: List[Command] = []
     # read first in order, then reverse pop to true location
@@ -58,14 +58,28 @@ def get_top(_stack: List[str]) -> str:
     return _stack[-1]
 
 
-if __name__ == '__main__':
-    cargo, commands = parse_input_file()
+def level5() -> Tuple[str, str]:
+    cargo1, commands = parse_input_file()
+    for command in commands:
+        for _ in range(command.amount):
+            character = cargo1.stacks[command.move_from].pop()
+            cargo1.stacks[command.move_to].append(character)
+
+    cargo2, commands = parse_input_file()
     for command in commands:
         temp_stack: List[str] = []
-        for i in range(command.amount):
-            character = cargo.stacks[command.move_from].pop()
+        for _ in range(command.amount):
+            character = cargo2.stacks[command.move_from].pop()
             temp_stack.append(character)
-        for i in range(command.amount):
-            cargo.stacks[command.move_to].append(temp_stack.pop())
+        for _ in range(command.amount):
+            cargo2.stacks[command.move_to].append(temp_stack.pop())
 
-    print(f"Top items: {''.join(list(map(get_top, cargo.stacks)))}")
+    top_items_1 = ''.join(list(map(get_top, cargo1.stacks)))
+    top_items_2 = ''.join(list(map(get_top, cargo2.stacks)))
+    return top_items_1, top_items_2
+
+
+if __name__ == '__main__':
+    _top_items1, _top_items2 = level5()
+    print(f"Top items 1: {_top_items1}")
+    print(f"Top items 2: {_top_items2}")

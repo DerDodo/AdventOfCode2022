@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from util.file_util import read_input_file
 
@@ -77,7 +77,7 @@ def read_contents(current_dir: Directory, lines: List[str], i: int) -> int:
 
 
 def parse_input() -> Directory:
-    lines = read_input_file(7, 1)
+    lines = read_input_file(7)
     root = Directory(None, "/")
     current_dir: Directory | None = None
 
@@ -106,13 +106,12 @@ def get_all_directories(root: Directory) -> List[Directory]:
     return all_directories
 
 
-if __name__ == '__main__':
+def level7() -> Tuple[int, int]:
     file_structure = parse_input()
     directories = get_all_directories(file_structure)
 
     small_directories = list(filter(lambda item: item.get_size() <= 100000, directories))
     level_1_size = sum(map(Directory.get_size, small_directories))
-    print(f"Level 1 size: {level_1_size}")
 
     max_space = 70000000
     needed_space = 30000000
@@ -121,4 +120,11 @@ if __name__ == '__main__':
     space_to_delete = used_space - usable_space
     big_directories = list(filter(lambda item: item.get_size() > space_to_delete, directories))
     level_2_size = min(map(Directory.get_size, big_directories))
-    print(f"Level 2 size: {level_2_size}")
+
+    return level_1_size, level_2_size
+
+
+if __name__ == '__main__':
+    _level_1_size, _level_2_size = level7()
+    print(f"Level 1 size: {_level_1_size}")
+    print(f"Level 2 size: {_level_2_size}")

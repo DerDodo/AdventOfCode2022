@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from typing import List
+from typing import List, Tuple
 
 from util.file_util import read_input_file
 
@@ -84,7 +84,7 @@ def step2mapper(opponent: RPS, text: str) -> RPS:
 
 
 def parse_input_file(mapper) -> List[Round]:
-    lines = read_input_file(2, 1)
+    lines = read_input_file(2)
     all_rounds: List[Round] = list()
     for line in lines:
         parts = line.split(" ")
@@ -98,9 +98,13 @@ def calc_score(rounds: List[Round]) -> int:
     return sum(map(Round.get_points, rounds))
 
 
-if __name__ == '__main__':
+def level2() -> Tuple[int, int]:
     rounds1 = parse_input_file(step1mapper)
-    print("Total score round 1: " + str(calc_score(rounds1)))
-
     rounds2 = parse_input_file(step2mapper)
-    print("Total score round 1: " + str(calc_score(rounds2)))
+    return calc_score(rounds1), calc_score(rounds2)
+
+
+if __name__ == '__main__':
+    score_round_1, score_round_2 = level2()
+    print(f"Total score round 1: {score_round_1}")
+    print(f"Total score round 2: {score_round_2}")

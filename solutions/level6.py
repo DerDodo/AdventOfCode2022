@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from util.file_util import read_input_file
 
@@ -21,7 +21,6 @@ def find_signal_start(text: str, num_characters: int) -> int:
     while i < len(text):
         c[num_characters - 1] = text[i]
         if is_all_distinct(c):
-            print(''.join(c))
             return i + 1
         for j in range(num_characters - 1):
             c[j] = c[j + 1]
@@ -29,8 +28,14 @@ def find_signal_start(text: str, num_characters: int) -> int:
     raise ValueError("Couldn't find start signal!")
 
 
-if __name__ == '__main__':
-    buffer = read_input_file(6, 1)[0]
-    signal_start = find_signal_start(buffer, 14)
+def level6() -> Tuple[int, int]:
+    signal_buffer = read_input_file(6)[0]
+    signal_start4 = find_signal_start(signal_buffer, 4)
+    signal_start14 = find_signal_start(signal_buffer, 14)
+    return signal_start4, signal_start14
 
-    print(f"Signal start: {signal_start}")
+
+if __name__ == '__main__':
+    _signal_start4, _signal_start14 = level6()
+    print(f"Signal start 4: {_signal_start4}")
+    print(f"Signal start 14: {_signal_start14}")

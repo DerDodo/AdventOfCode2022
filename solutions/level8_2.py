@@ -4,7 +4,7 @@ from util.file_util import read_input_file
 
 
 def parse_input() -> List[List[int]]:
-    lines = read_input_file(8, 1)
+    lines = read_input_file(8)
     return list(map(lambda line: [int(char) for char in line], lines))
 
 
@@ -78,10 +78,13 @@ def calc_scenic_scores(tree_matrix: List[List[int]]) -> List[List[int]]:
     return result
 
 
-if __name__ == '__main__':
+def level8_2() -> int:
     trees = parse_input()
     scenic_scores = calc_scenic_scores(trees)
     max_scenic_score = max(map(lambda line: max(line), scenic_scores))
-    for scores in scenic_scores:
-        print(",".join(map(lambda x: str(x), scores)))
-    print(f"Max scenic score: {max_scenic_score}")
+    return max_scenic_score
+
+
+if __name__ == '__main__':
+    _max_scenic_score = level8_2()
+    print(f"Max scenic score: {_max_scenic_score}")

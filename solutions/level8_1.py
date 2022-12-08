@@ -4,7 +4,7 @@ from util.file_util import read_input_file
 
 
 def parse_input() -> List[List[int]]:
-    lines = read_input_file(8, 1)
+    lines = read_input_file(8)
     return list(map(lambda line: [int(char) for char in line], lines))
 
 
@@ -52,24 +52,26 @@ def visible_from_bottom(tree_matrix: List[List[int]]) -> List[List[bool]]:
     return result
 
 
-if __name__ == '__main__':
+def level8_1() -> int:
     trees = parse_input()
-    visible_from_left = visible_from_left(trees)
-    visible_from_right = visible_from_right(trees)
-    visible_from_top = visible_from_top(trees)
-    visible_from_bottom = visible_from_bottom(trees)
+    from_left = visible_from_left(trees)
+    from_right = visible_from_right(trees)
+    from_top = visible_from_top(trees)
+    from_bottom = visible_from_bottom(trees)
 
     num_visible_trees = 0
     visible_trees = []
     for y in range(len(trees)):
         visible_trees_line = ""
         for x in range(len(trees[y])):
-            is_visible = (visible_from_left[y][x] or visible_from_right[y][x] or
-                          visible_from_top[y][x] or visible_from_bottom[y][x])
+            is_visible = (from_left[y][x] or from_right[y][x] or from_top[y][x] or from_bottom[y][x])
             visible_trees_line += str(1) if is_visible else str(0)
             if is_visible:
                 num_visible_trees += 1
         visible_trees.append(visible_trees_line)
-    for visible_tree_line in visible_trees:
-        print(visible_tree_line)
-    print(f"Num visible trees: {num_visible_trees}")
+    return num_visible_trees
+
+
+if __name__ == '__main__':
+    _num_visible_trees = level8_1()
+    print(f"Num visible trees: {_num_visible_trees}")

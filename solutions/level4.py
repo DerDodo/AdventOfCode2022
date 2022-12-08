@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from util.file_util import read_input_file
 
@@ -35,15 +35,19 @@ class Assignments:
 
 
 def parse_input_file() -> List[Assignments]:
-    lines = read_input_file(4, 1)
+    lines = read_input_file(4)
     all_assignments = list(map(Assignments, lines))
     return all_assignments
 
 
-if __name__ == '__main__':
+def level4() -> Tuple[int, int]:
     assignments = parse_input_file()
     num_full_overlaps = sum(1 if assignment.does_fully_overlap() else 0 for assignment in assignments)
-    print("Numbers of full overlaps: " + str(num_full_overlaps))
-
     num_partly_overlaps = sum(1 if assignment.does_partly_overlap() else 0 for assignment in assignments)
-    print("Numbers of partly overlaps: " + str(num_partly_overlaps))
+    return num_full_overlaps, num_partly_overlaps
+
+
+if __name__ == '__main__':
+    _num_full_overlaps, _num_partly_overlaps = level4()
+    print(f"Numbers of full overlaps: {_num_full_overlaps}")
+    print(f"Numbers of partly overlaps: {_num_partly_overlaps}")
