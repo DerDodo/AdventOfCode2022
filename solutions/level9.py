@@ -38,20 +38,14 @@ class Rope:
         self.store_tail_position()
 
     def move_knot(self, knot_id):
-        move_x = 0
-        move_y = 0
-
         knot = self.knots[knot_id]
         predecessor = self.knots[knot_id - 1]
 
         distance_x = predecessor.x - knot.x
         distance_y = predecessor.y - knot.y
         if abs(distance_x) > 1 or abs(distance_y) > 1:
-            move_x = clamp(distance_x)
-            move_y = clamp(distance_y)
-
-        knot.x += move_x
-        knot.y += move_y
+            knot.x = clamp(distance_x)
+            knot.y = clamp(distance_y)
 
 
 class Movement:
