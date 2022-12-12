@@ -44,8 +44,8 @@ class Rope:
         distance_x = predecessor.x - knot.x
         distance_y = predecessor.y - knot.y
         if abs(distance_x) > 1 or abs(distance_y) > 1:
-            knot.x = clamp(distance_x)
-            knot.y = clamp(distance_y)
+            knot.x += clamp(distance_x)
+            knot.y += clamp(distance_y)
 
 
 class Movement:
