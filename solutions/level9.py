@@ -1,10 +1,7 @@
 from typing import List, Set, Tuple
 
+from math_util import clamp
 from util.file_util import read_input_file
-
-
-def clamp(n):
-    return max(-1, min(1, n))
 
 
 class Knot:
