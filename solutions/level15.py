@@ -38,19 +38,17 @@ class Field:
         self.sensors = list(map(Sensor, definitions))
         self.min_x = 1000000
         self.max_x = -1000000
-        for beacon in self.sensors:
-            self.min_x = min(self.min_x, beacon.position_x, beacon.beacon_x)
-            self.max_x = max(self.max_x, beacon.position_x, beacon.beacon_x)
+        for sensor in self.sensors:
+            distance_sensor_to_beacon = sensor.get_distance()
+            self.min_x = min(
+                self.min_x, sensor.position_x - distance_sensor_to_beacon, sensor.position_x, sensor.beacon_x
+            )
+            self.max_x = max(
+                self.max_x, sensor.position_x + distance_sensor_to_beacon, sensor.position_x, sensor.beacon_x
+            )
         self.width = self.max_x - self.min_x + 1
 
     def calc_signal_spots_for_line(self, y: int) -> int:
-        extent_left = 0
-        extent_right = self.width
-        for sensor in self.sensors:
-            distance_sensor_to_beacon = sensor.get_distance()
-            extent_left = min(extent_left, sensor.position_x - distance_sensor_to_beacon)
-            extent_right = min(extent_left, sensor.position_x - distance_sensor_to_beacon)
-
         line = [Position.Unknown] * self.width
 
         for sensor in self.sensors:
@@ -71,7 +69,7 @@ class Field:
                 x = sensor.beacon_x - self.min_x
                 line[x] = Position.Beacon
 
-        print("".join(map(lambda p: p.value, line)))
+        # print("".join(map(lambda p: p.value, line)))
         return len(list(filter(lambda p: p == Position.Signal, line)))
 
 
@@ -85,6 +83,6 @@ def level15(y: int) -> Tuple[int, int]:
     return field.calc_signal_spots_for_line(y), 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _signal_spots, _num = level15(2000000)
     print(f"Signal spots (1): {_signal_spots}")
