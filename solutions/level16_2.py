@@ -78,13 +78,13 @@ def find_steps(graph: Dict[str, Valve], route: List[str]) -> Deque[str]:
     return steps
 
 
-def level16_2(targets_start: list[str], elephant_targets_start: list[str]) -> int:
+def level16_2(rounds: int, targets_start: list[str], elephant_targets_start: list[str]) -> int:
     valves = parse_input_file()
     all_targets = list(filter(lambda valve: valves[valve].flow_rate > 0, valves))
     reduced_targets = [target for target in all_targets if target not in targets_start]
     reduced_targets = [target for target in reduced_targets if target not in elephant_targets_start]
     max_pressure = 0
-    for _ in range(100000):
+    for _ in range(rounds):
         shuffle(reduced_targets)
         targets = targets_start + reduced_targets
         shuffle(reduced_targets)
@@ -137,10 +137,10 @@ def level16_2(targets_start: list[str], elephant_targets_start: list[str]) -> in
 
 
 if __name__ == "__main__":
-    # _max_pressure = level16_2([], [])
-    # _max_pressure = level16_2(["EX"], ["TA"])  # 2165
-    # _max_pressure = level16_2(["QK"], ["TA"])  # 2389
-    # _max_pressure = level16_2(["QK", "JA"], ["TA", "DC"])  # 2461
-    # _max_pressure = level16_2(["QK", "JA", "VK"], ["TA", "DC", "XN"])  # 2610
-    _max_pressure = level16_2(["QK", "JA", "VK", "ID"], ["TA", "DC", "XN", "DH"])  # 2675
+    # _max_pressure = level16_2(100000, [], [])
+    # _max_pressure = level16_2(100000, ["EX"], ["TA"])  # 2165
+    # _max_pressure = level16_2(100000, ["QK"], ["TA"])  # 2389
+    # _max_pressure = level16_2(100000, ["QK", "JA"], ["TA", "DC"])  # 2461
+    # _max_pressure = level16_2(100000, ["QK", "JA", "VK"], ["TA", "DC", "XN"])  # 2610
+    _max_pressure = level16_2(100000, ["QK", "JA", "VK", "ID"], ["TA", "DC", "XN", "DH"])  # 2675
     print(f"Max pressure: {_max_pressure}")
