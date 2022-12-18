@@ -24,22 +24,6 @@ def parse_input_file() -> Dict[str, Valve]:
     return {valve.id: valve for valve in valves}
 
 
-def generate_all_permutations(item: List[str]) -> List[List[str]]:
-    if len(item) == 0:
-        return []
-
-    if len(item) == 1:
-        return [item]
-
-    permutations = []
-    for i in range(len(item)):
-        start = item[i]
-        remaining_list = item[:i] + item[i + 1 :]
-        for permutation in generate_all_permutations(remaining_list):
-            permutations.append([start] + permutation)
-    return permutations
-
-
 # https://onestepcode.com/graph-shortest-path-python/
 def shortest_path(graph: Dict[str, Valve], start, end) -> Deque[str]:
     path_list: List[Deque[str]] = [[start]]
@@ -83,7 +67,7 @@ def level16_1(rounds: int, targets_start: list[str]) -> int:
     all_targets = list(filter(lambda valve: valves[valve].flow_rate > 0, valves))
     reduced_targets = [target for target in all_targets if target not in targets_start]
     max_pressure = 0
-    for _ in range(rounds):
+    for i in range(rounds):
         shuffle(reduced_targets)
         targets = targets_start + reduced_targets
         next_target = 0
@@ -103,7 +87,8 @@ def level16_1(rounds: int, targets_start: list[str]) -> int:
             elif len(steps) > 0:
                 current_room = steps.popleft()
         if max_pressure < pressure_released:
-            print(f"New best route! pressure: {pressure_released}, route: {' -> '.join(targets)}")
+            if i > 2000:
+                print(f"New best route! pressure: {pressure_released}, route: {' -> '.join(targets)}")
             max_pressure = pressure_released
     return max_pressure
 

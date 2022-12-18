@@ -3,10 +3,10 @@ from level16_2 import level16_2
 
 
 def test_level16_1():
-    _max_pressure = level16_1(1000, [])
+    _max_pressure = level16_1(2000, [])
     assert _max_pressure == 1651
 
 
 def test_level16_2():
-    _max_pressure = level16_2(1000, ["DD"], ["JJ"])
+    _max_pressure = level16_2(2000, ["DD"], ["JJ"])
     assert _max_pressure == 1707
