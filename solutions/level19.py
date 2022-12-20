@@ -1,12 +1,9 @@
-from enum import Enum
-from typing import List, Set, Tuple, Dict
+from math import ceil
+from typing import List, Set, Tuple, Dict, Any
 
 from util.file_util import read_input_file
 
-
-Materials = Dict[str, int]
 Robots = Dict[str, int]
-
 
 ORE = "ore"
 CLAY = "clay"
@@ -16,31 +13,175 @@ GEODE = "geode"
 ALL_MATERIALS = [ORE, CLAY, OBSIDIAN, GEODE]
 
 
+class Materials:
+    materials: Dict[str, int]
+
+    def __init__(self, materials: Dict[str, int]):
+        self.materials = materials.copy()
+        for material in ALL_MATERIALS:
+            if material not in self.materials: self.materials[material] = 0
+
+    def is_contained_in(self, other):
+        for material in ALL_MATERIALS:
+            if self.materials[material] > other.materials[material]:
+                return False
+        return True
+
+    def decrease(self, other):
+        for material in ALL_MATERIALS:
+            self.materials[material] = max(0, self.materials[material] - other.materials[material])
+
+    def add(self, other):
+        for material in ALL_MATERIALS:
+            self.materials[material] += other.materials[material]
+
+    def mul_add(self, robots: Robots, mul: int):
+        for material in ALL_MATERIALS:
+            self.materials[material] += robots[material] * mul
+
+    def divide_ceil(self, robots: Robots):
+        for material in ALL_MATERIALS:
+            if robots[material] > 0:
+                self.materials[material] = ceil(self.materials[material] / robots[material])
+            elif self.materials[material] != 0:
+                self.materials[material] = 100000000
+
+
 class Blueprint:
     id: int
-    robot_cost: Dict[str, Dict[str, int]]
+    robot_cost: Dict[str, Materials]
 
     def __init__(self, line: str):
         parts = line.split(" ")
         self.id = int(parts[1].replace(":", ""))
         self.robot_cost = {
-            ORE: {ORE: int(parts[6])},
-            CLAY: {ORE: int(parts[12])},
-            OBSIDIAN: {ORE: int(parts[18]), CLAY: int(parts[21])},
-            GEODE: {ORE: int(parts[27]), OBSIDIAN: int(parts[30])},
+            ORE: Materials({ORE: int(parts[6])}),
+            CLAY: Materials({ORE: int(parts[12])}),
+            OBSIDIAN: Materials({ORE: int(parts[18]), CLAY: int(parts[21])}),
+            GEODE: Materials({ORE: int(parts[27]), OBSIDIAN: int(parts[30])}),
         }
 
-    def can_build(self, robot: str, materials: Materials) -> bool:
-        for cost in self.robot_cost[robot]:
-            if materials[cost] < self.robot_cost[robot][cost]:
-                return False
-        return True
 
-    def consume_resources(self, robot: str, materials: Materials):
-        for cost in self.robot_cost[robot]:
-            if materials[cost] < self.robot_cost[robot][cost]:
-                raise ValueError(f"Cannot consume resources! blueprint: {self.id}, robot: {robot}, material: {cost}, available: {materials[cost]}, needed: {self.robot_cost[robot][cost]}")
-            materials[cost] -= self.robot_cost[robot][cost]
+class WaitAndBuild:
+    robot: str
+    wait_for: Materials
+
+    def __init__(self, robot: str, cost: Materials):
+        self.robot = robot
+        self.wait_for = Materials(cost.materials)
+
+    def get_wait_time(self, inventory: Materials, robots: Robots) -> Tuple[int, str]:
+        time = Materials(self.wait_for.materials)
+        time.decrease(inventory)
+        time.divide_ceil(robots)
+        max_time = max(time.materials.values())
+        resources = [material for material in time.materials if time.materials[material] == max_time]
+        min_robots = min([robots[robot] for robot in robots if robot in resources])
+        resource = [robot for robot in robots if robots[robot] == min_robots and robot in resources]
+        return max_time, resource[-1]
+
+
+class Strategy:
+    steps: List[WaitAndBuild]
+    blueprint: Blueprint
+
+    def __init__(self, blueprint: Blueprint):
+        self.blueprint = blueprint
+        self.steps = []
+        self.add_step(CLAY, 0)
+        self.add_step(OBSIDIAN, 1)
+        self.add_step(GEODE, 2)
+        self.optimize()
+        while self.get_total_time() < 24:
+            self.add_step(GEODE, len(self.steps))
+            self.optimize()
+
+    def add_step(self, robot: str, position: int):
+        self.steps.insert(position, WaitAndBuild(robot, self.blueprint.robot_cost[robot]))
+
+    def add_steps(self, robots: List[str], position: int):
+        steps = [WaitAndBuild(robot, self.blueprint.robot_cost[robot]) for robot in robots]
+        steps.reverse()
+        for step in steps:
+            self.steps.insert(position, step)
+
+    def _calc_optimization_priority(self) -> List[Tuple[int, Tuple[int, str]]]:
+        wait_times = self.get_wait_times(self.steps)
+
+        priority: List[Tuple[int, Tuple[int, str]]] = []
+        for i in range(len(wait_times)):
+            priority.append((i, wait_times[i]))
+        priority.sort(key=lambda p: p[1][0], reverse=True)
+
+        return priority
+
+    def optimize(self):
+        last_num_steps = 0
+        priority = self._calc_optimization_priority()
+
+        while last_num_steps != len(self.steps):
+            last_num_steps = len(self.steps)
+            for i in range(len(priority)):
+                time = priority[i][1]
+                items_to_add = [time[1]]
+                does_improve = self.does_improve(items_to_add, i)
+                if not does_improve:
+                    if time[1] == OBSIDIAN:
+                        items_to_add = [CLAY, OBSIDIAN]
+                        does_improve = self.does_improve(items_to_add, priority[i][0])
+                        if not does_improve:
+                            items_to_add = [ORE, CLAY, OBSIDIAN]
+                            does_improve = self.does_improve(items_to_add, priority[i][0])
+                    elif time[1] == CLAY:
+                        items_to_add = [ORE, CLAY]
+                        does_improve = self.does_improve(items_to_add, priority[i][0])
+                if does_improve:
+                    self.add_steps(items_to_add, priority[i][0])
+                    priority = self._calc_optimization_priority()
+                    break
+
+    def does_improve(self, robots: List[str], index: int) -> bool:
+        current_total_time = self._get_total_time(self.steps)
+        new_steps = self.steps[:index] + [WaitAndBuild(robot, self.blueprint.robot_cost[robot]) for robot in robots] + self.steps[index:]
+        new_total_time = self._get_total_time(new_steps)
+        return new_total_time < current_total_time and new_total_time < 24
+
+    def get_wait_times(self, steps: List[WaitAndBuild]) -> List[Tuple[int, str]]:
+        inventory = Materials({})
+        robots = {ORE: 1, CLAY: 0, OBSIDIAN: 0, GEODE: 0}
+        wait_times = []
+        for step in steps:
+            wait_time, resource = step.get_wait_time(inventory, robots)
+            inventory.mul_add(robots, wait_time + 1)
+            inventory.decrease(self.blueprint.robot_cost[step.robot])
+            robots[step.robot] += 1
+            wait_times.append((wait_time, resource))
+        return wait_times
+
+    def get_total_time(self) -> int:
+        return self._get_total_time(self.steps)
+
+    def _get_total_time(self, steps: List[WaitAndBuild]) -> int:
+        wait_times = self.get_wait_times(steps)
+        return sum(map(lambda t: t[0], wait_times)) + len(wait_times)
+
+    def get_num_geodes(self) -> int:
+        inventory = Materials({})
+        robots = {ORE: 1, CLAY: 0, OBSIDIAN: 0, GEODE: 0}
+        total_time = 0
+        for step in self.steps:
+            wait_time, resource = step.get_wait_time(inventory, robots)
+            if total_time + wait_time + 1 <= 24:
+                inventory.mul_add(robots, wait_time + 1)
+                inventory.decrease(self.blueprint.robot_cost[step.robot])
+                robots[step.robot] += 1
+                total_time += wait_time + 1
+            else:
+                remaining_time = 24 - total_time
+                inventory.mul_add(robots, remaining_time)
+                total_time += remaining_time
+                break
+        return inventory.materials[GEODE]
 
 
 def parse_input_file() -> List[Blueprint]:
@@ -48,75 +189,9 @@ def parse_input_file() -> List[Blueprint]:
     return list(map(Blueprint, lines))
 
 
-def strategy_prefer_later(blueprint: Blueprint, materials: Materials, _: Robots) -> str | None:
-    for robot_type in [GEODE, OBSIDIAN, CLAY, ORE]:
-        if blueprint.can_build(robot_type, materials):
-            return robot_type
-    return None
-
-
-def strategy_calc_resource_need(blueprint: Blueprint, materials: Materials, _: Robots) -> str | None:
-    need = {
-        ORE: 0,
-        CLAY: 0,
-        OBSIDIAN: 0,
-        GEODE: 0,
-    }
-
-    if blueprint.can_build(GEODE, materials):
-        return GEODE
-
-    for cost in blueprint.robot_cost[GEODE]:
-        need[cost] += blueprint.robot_cost[GEODE][cost]
-
-    temp_max = max(need.values())
-    most_needed_materials = [key for key in need if need[key] == temp_max]
-    for material in most_needed_materials:
-        if blueprint.can_build(material, materials):
-            return material
-
-    go_on = True
-    while go_on:
-        for material in ALL_MATERIALS:
-            need[material]
-
-
-def strategy_2_by_2(blueprint: Blueprint, materials: Materials, robots: Robots) -> str | None:
-    num_robots = sum(robots.values())
-    robot = ALL_MATERIALS[(num_robots // 2) % 4]
-    if blueprint.can_build(robot, materials):
-        return robot
-    return None
-
-
-def mine(blueprint: Blueprint, strategy) -> int:
-    materials = {
-        ORE: 0,
-        CLAY: 0,
-        OBSIDIAN: 0,
-        GEODE: 0,
-    }
-    robots = {
-        ORE: 1,
-        CLAY: 0,
-        OBSIDIAN: 0,
-        GEODE: 0,
-    }
-    for _ in range(24):
-        new_robot = strategy(blueprint, materials, robots)
-        for material in ALL_MATERIALS:
-            materials[material] += robots[material]
-        if new_robot is not None:
-            blueprint.consume_resources(new_robot, materials)
-            robots[new_robot] += 1
-    return materials[GEODE]
-
-
 def calc_best_num_geodes(blueprint: Blueprint) -> int:
-    return max(
-        mine(blueprint, strategy_prefer_later),
-        mine(blueprint, strategy_2_by_2),
-    )
+    strategy = Strategy(blueprint)
+    return strategy.get_num_geodes()
 
 
 def level19() -> Tuple[int, int]:
