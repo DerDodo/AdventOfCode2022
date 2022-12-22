@@ -5,14 +5,14 @@ from util.file_util import read_input_file
 
 
 class WrapType(Enum):
-    Map = 0,
+    Map = (0,)
     Cube = 1
 
 
 class Tile(Enum):
-    Void = " ",
-    Free = ".",
-    Wall = "#",
+    Void = (" ",)
+    Free = (".",)
+    Wall = ("#",)
 
 
 class Direction(Enum):
@@ -128,7 +128,9 @@ class Map:
             elif wrap_tile_type == Tile.Wall:
                 return x, y, direction, True
             else:
-                raise ValueError(f"Wrap around returned Void, x: {x}, y: {y}, new_x: {new_x}, new_y: {new_y}, direction: {direction}")
+                raise ValueError(
+                    f"Wrap around returned Void, x: {x}, y: {y}, new_x: {new_x}, new_y: {new_y}, direction: {direction}"
+                )
         else:
             raise ValueError(f"Unknown type type {tile_type} at x: {new_x}, y: {new_y}")
 
@@ -223,7 +225,6 @@ class Map:
         face_length = self._get_face_length()
         face_x = x % face_length
         face_y = y % face_length
-        inverse_face_x = face_length - (face_x + 1)
         inverse_face_y = face_length - (face_y + 1)
         if face == 1 and direction == Direction.Up:  # 1 -> 6
             target_x = 0
@@ -311,22 +312,36 @@ class Map:
         else:
             raise ValueError(f"Unknown cube layout {self.cube_layout}")
 
-    def _get_face_id_layout_0(self, face_x: int, face_y: int) -> int:
-        if face_y == 0 and face_x == 2: return 1
-        elif face_y == 1 and face_x == 0: return 2
-        elif face_y == 1 and face_x == 1: return 3
-        elif face_y == 1 and face_x == 2: return 4
-        elif face_y == 2 and face_x == 2: return 5
-        elif face_y == 2 and face_x == 3: return 6
+    @staticmethod
+    def _get_face_id_layout_0(face_x: int, face_y: int) -> int:
+        if face_y == 0 and face_x == 2:
+            return 1
+        elif face_y == 1 and face_x == 0:
+            return 2
+        elif face_y == 1 and face_x == 1:
+            return 3
+        elif face_y == 1 and face_x == 2:
+            return 4
+        elif face_y == 2 and face_x == 2:
+            return 5
+        elif face_y == 2 and face_x == 3:
+            return 6
         raise ValueError(f"Cannot find face! face_x: {face_x},  face_y: {face_y}")
 
-    def _get_face_id_layout_1(self, face_x: int, face_y: int) -> int:
-        if face_y == 0 and face_x == 1: return 1
-        elif face_y == 0 and face_x == 2: return 2
-        elif face_y == 1 and face_x == 1: return 3
-        elif face_y == 2 and face_x == 0: return 4
-        elif face_y == 2 and face_x == 1: return 5
-        elif face_y == 3 and face_x == 0: return 6
+    @staticmethod
+    def _get_face_id_layout_1(face_x: int, face_y: int) -> int:
+        if face_y == 0 and face_x == 1:
+            return 1
+        elif face_y == 0 and face_x == 2:
+            return 2
+        elif face_y == 1 and face_x == 1:
+            return 3
+        elif face_y == 2 and face_x == 0:
+            return 4
+        elif face_y == 2 and face_x == 1:
+            return 5
+        elif face_y == 3 and face_x == 0:
+            return 6
         raise ValueError(f"Cannot find face! face_x: {face_x},  face_y: {face_y}")
 
     def _get_face_length(self) -> int:
@@ -377,10 +392,9 @@ def parse_input_file(wrap_type: WrapType, cube_layout: int) -> Map:
 def level22(wrap_type: WrapType, cube_layout: int = -1) -> int:
     field = parse_input_file(wrap_type, cube_layout)
     password = field.get_password()
-    field.print_path()
     return password
 
 
 if __name__ == "__main__":
-    #print(f"Password (map): {level22(WrapType.Map)}")
+    print(f"Password (map): {level22(WrapType.Map)}")
     print(f"Password (cube): {level22(WrapType.Cube, 1)}")
