@@ -223,6 +223,8 @@ class Map:
         face_length = self._get_face_length()
         face_x = x % face_length
         face_y = y % face_length
+        inverse_face_x = face_length - (face_x + 1)
+        inverse_face_y = face_length - (face_y + 1)
         if face == 1 and direction == Direction.Up:  # 1 -> 6
             target_x = 0
             target_y = face_length * 3 + face_x
@@ -230,7 +232,7 @@ class Map:
             assert self._get_face_id(target_x, target_y) == 6
         elif face == 1 and direction == Direction.Left:  # 1 -> 4
             target_x = 0
-            target_y = face_length * 3 - (face_y + 1)
+            target_y = face_length * 2 + inverse_face_y
             target_direction = Direction.Right
             assert self._get_face_id(target_x, target_y) == 4
         elif face == 2 and direction == Direction.Up:  # 2 -> 6
@@ -240,7 +242,7 @@ class Map:
             assert self._get_face_id(target_x, target_y) == 6
         elif face == 2 and direction == Direction.Right:  # 2 -> 5
             target_x = face_length * 2 - 1
-            target_y = face_length * 3 - (face_y + 1)
+            target_y = face_length * 2 + inverse_face_y
             target_direction = Direction.Left
             assert self._get_face_id(target_x, target_y) == 5
         elif face == 2 and direction == Direction.Down:  # 2 -> 3
@@ -265,12 +267,12 @@ class Map:
             assert self._get_face_id(target_x, target_y) == 3
         elif face == 4 and direction == Direction.Left:  # 4 -> 1
             target_x = face_length
-            target_y = face_length - (face_y + 1)
+            target_y = inverse_face_y
             target_direction = Direction.Right
             assert self._get_face_id(target_x, target_y) == 1
         elif face == 5 and direction == Direction.Right:  # 5 -> 2
             target_x = face_length * 3 - 1
-            target_y = face_length - (face_y + 1)
+            target_y = inverse_face_y
             target_direction = Direction.Left
             assert self._get_face_id(target_x, target_y) == 2
         elif face == 5 and direction == Direction.Down:  # 5 -> 6
@@ -279,7 +281,7 @@ class Map:
             target_direction = Direction.Left
             assert self._get_face_id(target_x, target_y) == 6
         elif face == 6 and direction == Direction.Left:  # 6 -> 1
-            target_x = face_length + face_x
+            target_x = face_length + face_y
             target_y = 0
             target_direction = Direction.Down
             assert self._get_face_id(target_x, target_y) == 1
