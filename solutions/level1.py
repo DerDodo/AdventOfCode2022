@@ -39,7 +39,7 @@ def level1() -> Tuple[Elf, int]:
     return max_elf, max_three_elves_weight
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _max_elf, _max_three_elves_weight = level1()
     print("Max carrying elf: " + str(_max_elf.total_weight()))
     print("Max 3 carrying elves: " + str(_max_three_elves_weight))

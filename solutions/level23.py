@@ -9,10 +9,10 @@ POSITION_ID_KEY = 10000
 
 
 class Direction(Enum):
-    North = (0,)
-    South = (1,)
-    West = (2,)
-    East = (3,)
+    North = 0
+    South = 1
+    West = 2
+    East = 3
 
 
 def get_position_id(x: int, y: int) -> int:
