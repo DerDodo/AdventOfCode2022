@@ -19,7 +19,7 @@ def get_position_id(x: int, y: int) -> int:
     return x + y * POSITION_ID_KEY
 
 
-def get_coords(position_id: int) -> Tuple[int, int]:
+def get_coordinates(position_id: int) -> Tuple[int, int]:
     y = position_id // POSITION_ID_KEY
     x = position_id - y * POSITION_ID_KEY
     return x, y
@@ -141,7 +141,7 @@ def move_elves(elves: Elves, direction_check_order: List[Direction]) -> Tuple[El
         if len(movement_proposal) == 1:
             elf = movement_proposal[0]
             new_elves[movement_proposal_id] = elf
-            x, y = get_coords(movement_proposal_id)
+            x, y = get_coordinates(movement_proposal_id)
             elf.x = x
             elf.y = y
         else:
