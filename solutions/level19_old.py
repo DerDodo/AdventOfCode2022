@@ -1,4 +1,4 @@
-from typing import List, Set, Tuple, Dict
+from typing import List, Tuple, Dict
 
 from util.file_util import read_input_file
 
@@ -22,7 +22,7 @@ class Materials:
 
     def is_contained_in(self, other):
         for material in ALL_MATERIALS:
-            if self.materials[material] > other.materials[material]:
+            if self.materials[material] > other.items[material]:
                 return False
         return True
 
@@ -31,11 +31,11 @@ class Materials:
             raise ValueError("Cannot decrease materials")
 
         for material in ALL_MATERIALS:
-            self.materials[material] -= other.materials[material]
+            self.materials[material] -= other.items[material]
 
     def add(self, other):
         for material in ALL_MATERIALS:
-            self.materials[material] += other.materials[material]
+            self.materials[material] += other.items[material]
 
     def has_any(self, materials: List[str]) -> bool:
         for material in materials:

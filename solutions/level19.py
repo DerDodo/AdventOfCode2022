@@ -1,5 +1,5 @@
 from math import ceil
-from typing import List, Set, Tuple, Dict, Any
+from typing import List, Tuple, Dict
 
 from util.file_util import read_input_file
 
@@ -14,37 +14,38 @@ ALL_MATERIALS = [ORE, CLAY, OBSIDIAN, GEODE]
 
 
 class Materials:
-    materials: Dict[str, int]
+    items: Dict[str, int]
 
     def __init__(self, materials: Dict[str, int]):
-        self.materials = materials.copy()
+        self.items = materials.copy()
         for material in ALL_MATERIALS:
-            if material not in self.materials: self.materials[material] = 0
+            if material not in self.items:
+                self.items[material] = 0
 
     def is_contained_in(self, other):
         for material in ALL_MATERIALS:
-            if self.materials[material] > other.materials[material]:
+            if self.items[material] > other.items[material]:
                 return False
         return True
 
     def decrease(self, other):
         for material in ALL_MATERIALS:
-            self.materials[material] = max(0, self.materials[material] - other.materials[material])
+            self.items[material] = max(0, self.items[material] - other.items[material])
 
     def add(self, other):
         for material in ALL_MATERIALS:
-            self.materials[material] += other.materials[material]
+            self.items[material] += other.items[material]
 
     def mul_add(self, robots: Robots, mul: int):
         for material in ALL_MATERIALS:
-            self.materials[material] += robots[material] * mul
+            self.items[material] += robots[material] * mul
 
     def divide_ceil(self, robots: Robots):
         for material in ALL_MATERIALS:
             if robots[material] > 0:
-                self.materials[material] = ceil(self.materials[material] / robots[material])
-            elif self.materials[material] != 0:
-                self.materials[material] = 100000000
+                self.items[material] = ceil(self.items[material] / robots[material])
+            elif self.items[material] != 0:
+                self.items[material] = 100000000
 
 
 class Blueprint:
@@ -68,14 +69,14 @@ class WaitAndBuild:
 
     def __init__(self, robot: str, cost: Materials):
         self.robot = robot
-        self.wait_for = Materials(cost.materials)
+        self.wait_for = Materials(cost.items)
 
     def get_wait_time(self, inventory: Materials, robots: Robots) -> Tuple[int, str]:
-        time = Materials(self.wait_for.materials)
+        time = Materials(self.wait_for.items)
         time.decrease(inventory)
         time.divide_ceil(robots)
-        max_time = max(time.materials.values())
-        resources = [material for material in time.materials if time.materials[material] == max_time]
+        max_time = max(time.items.values())
+        resources = [material for material in time.items if time.items[material] == max_time]
         min_robots = min([robots[robot] for robot in robots if robot in resources])
         resource = [robot for robot in robots if robots[robot] == min_robots and robot in resources]
         return max_time, resource[-1]
@@ -181,7 +182,7 @@ class Strategy:
                 inventory.mul_add(robots, remaining_time)
                 total_time += remaining_time
                 break
-        return inventory.materials[GEODE]
+        return inventory.items[GEODE]
 
 
 def parse_input_file() -> List[Blueprint]:
