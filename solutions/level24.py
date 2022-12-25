@@ -86,7 +86,7 @@ def parse_input_file() -> Field:
     return Field(lines)
 
 
-def level24_bfs_trip(field: Field, start: Tuple[int, int, int], end: Tuple[int, int]) -> int:
+def level24_trip(field: Field, start: Tuple[int, int, int], end: Tuple[int, int]) -> int:
     todo = [start]
     todo_set = {start}
     i = 0
@@ -105,16 +105,12 @@ def level24_bfs_trip(field: Field, start: Tuple[int, int, int], end: Tuple[int, 
     raise ValueError("Couldn't find exit!")
 
 
-def level24_bfs() -> Tuple[int, int]:
-    field = parse_input_file()
-    minutes_trip_1 = level24_bfs_trip(field, (field.start[0], field.start[1], 0), field.end)
-    minutes_trip_2 = level24_bfs_trip(field, (field.end[0], field.end[1], minutes_trip_1), field.start)
-    minutes_trip_3 = level24_bfs_trip(field, (field.start[0], field.start[1], minutes_trip_2), field.end)
-    return minutes_trip_1, minutes_trip_3
-
-
 def level24() -> Tuple[int, int]:
-    return level24_bfs()
+    field = parse_input_file()
+    minutes_trip_1 = level24_trip(field, (field.start[0], field.start[1], 0), field.end)
+    minutes_trip_2 = level24_trip(field, (field.end[0], field.end[1], minutes_trip_1), field.start)
+    minutes_trip_3 = level24_trip(field, (field.start[0], field.start[1], minutes_trip_2), field.end)
+    return minutes_trip_1, minutes_trip_3
 
 
 if __name__ == "__main__":
